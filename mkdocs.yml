@@ -1,0 +1,55 @@
+site_name: notalpha/docs
+theme:
+  name: material
+  custom_dir: docs/custom/overrides
+  font:
+    code: Jetbrains Mono
+    text: Roboto
+  features:
+    # Make the site have tabs on the top
+    - navigation.tabs
+    - navigation.instant
+    - navigation.indexes 
+    - content.code.annotate 
+    # Enhance search
+    - search.suggest
+    - search.share
+
+plugins:
+  - search
+  - social:
+      cards_color:
+        fill: "#2d2a2e" 
+        text: "#fcfcfa"
+
+extra:
+  social:
+    - icon: fontawesome/brands/github 
+      link: https://github.com/alphaqu
+    - icon: fontawesome/brands/discord 
+      link: https://discord.gg/ZtjKKd8bBT
+
+extra_css:
+  - custom/stylesheets/extra.css
+
+markdown_extensions:
+  # Big warning panels are cool
+  - admonition
+  # Misc stuff like annotations and grids
+  - attr_list
+  # Defeninition lists
+  - def_list
+  # Collapsable admonition
+  - pymdownx.details
+  # I wonder what this dose
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  # Code highlighting
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+  # Epic keyboard keys
+  - pymdownx.keys
+  - meta
