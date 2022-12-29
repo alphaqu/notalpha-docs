@@ -4,7 +4,7 @@ icon: "data_array"
 # DashObject
 The DashObject is a serializable form of the Object you are trying to cache. 
 
-So for example an Identifier has a DashIdentifier which is a DashObject and is the object that dashloader serializes into the cache file. Where it later loads it back and exports the DashIdentifier to Identifier.
+So for example an Identifier has a DashIdentifier which is a DashObject and is the object that DashLoader serializes into the cache file. This is later loaded back and converted to a standard Identifier for exporting.
 
 ???+ abstract
 
@@ -34,14 +34,14 @@ So for example an Identifier has a DashIdentifier which is a DashObject and is t
 	}
 	```
 
-	1. This is the DashObject annotation which says that we are trying to add caching support to Identifier
-	2. The Dashable interface is inherited by every DashObject, it includes methods like `export` which run on deserialization.
+	1. This is the DashObject annotation which says that we are trying to add caching support to Identifier.
+	2. The Dashable interface is inherited by every DashObject - it includes methods like `export` which run on deserialization.
 	3. This constructor contains every field so that Hyphen (the serializer we use) can create the object.
 	4. This constructor gets run when a new Identifier tries to get cached. Your goal is to destructure the object so that we can serialize it. It is commonly refered as the "Factory" constructor.
 	5. This export method gets run on deserialization. Here you recreate the original Identifier object.
 
 ## Metadata
-DashLoader needs to understand what exactly it is handling and what the DashObject is trying to do. This is why the `DashObject` annotation exists, it tells DashLoader what we are trying to add caching support to. Every DashObject which is defined in `fabric.mod.json` needs to have this annotation.
+DashLoader needs to understand what exactly it is handling and what the DashObject is trying to do. This is why the `DashObject` annotation exists - it tells DashLoader what we are trying to add caching support to. Every DashObject which is defined in `fabric.mod.json` needs to have this annotation.
 
 In this example we are adding support to `Identifier` by making a `DashIdentifier` have the annotation `DashObject` with the *target* `Identifier.class`
 ```java
@@ -50,7 +50,7 @@ public class DashIdentifier {}
 ```
 
 ## Factory Constructor
-When an Object gets added to a `RegistryWriter` it tries to find a DashObject that has support for that class. If it finds a DashObject, it's "Factory" constructor will be called. 
+When an Object gets added to a `RegistryWriter` it tries to find a DashObject that has support for that class. If it finds a DashObject, its "Factory" constructor will be called. 
 
 The constructor can have 4 different signatures.
 
@@ -86,12 +86,12 @@ public class DashIdentifier {
 }
 ```
 
-Please note this constructor must be public else DashLoader cannot access it.
+Please note that this constructor must be public since otherwise DashLoader cannot access it.
 
 ## Serialization
-DashLoader uses the Hyphen Serializer because of it's speed and efficiency. The documatation for that serializer is available on [docs.notalpha.dev/hyphen](docs.notalpha.dev/hyphen).
+DashLoader uses the Hyphen Serializer for maximum speed and efficiency. The documentation for that serializer is available on [docs.notalpha.dev/hyphen](docs.notalpha.dev/hyphen).
 
-But we will show a simple example here.
+We will show a simple example here:
 
 ```java hl_lines="7-11"
 @DashObject(Identifier.class)
@@ -114,7 +114,7 @@ public class DashIdentifier {
 ```
 
 1. The fields that need to be serialized need to be `#!java public`. If you want a temporary field, mark it as `#!java transient`
-2. We have a constructor which takes in all of the fields we defined. Please note the arguments must have the same order as the fields and it needs to be `#!java public`.
+2. We have a constructor which takes in all the fields we defined. Please note that the arguments must have the same order as the fields, and it needs to be `#!java public`.
 
 
 ## Exporting
@@ -134,7 +134,7 @@ Identifier export(RegistryReader reader);
 void postExport(RegistryReader reader);
 ```
 
-So for our Identifier, an example of export method looks like this.
+So for our Identifier, an example of export method looks like this:
 
 ```java hl_lines="2 16-19"
 @DashObject(Identifier.class)

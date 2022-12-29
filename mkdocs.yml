@@ -2,6 +2,8 @@ site_name: notalpha/docs
 theme:
   name: material
   custom_dir: docs/custom/overrides
+  palette:
+    - scheme: slate
   font:
     code: Jetbrains Mono
     text: Roboto

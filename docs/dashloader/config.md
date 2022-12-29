@@ -3,9 +3,9 @@ icon: "settings"
 ---
 # Config
 ## Options
-DashLoader has modularized systems which can be toggled in a mods `fabric.mod.json` or in the config by changing the `options` table.
+DashLoader has modularized systems which can be toggled in a mod's `fabric.mod.json` or in the config by changing the `options` table.
 
-!!! example
+!!! example "Config Example"
     This is how you would disable the option `CACHE_MODEL_LOADER` in your config.
     ```json title="dashloader.json"
     {
@@ -14,9 +14,9 @@ DashLoader has modularized systems which can be toggled in a mods `fabric.mod.js
       },
     }
     ```
-??? note "Remove from fabric.mod.json"
+??? note "fabric.mod.json Example"
     This is how you can disable a DashLoader option in your mod. 
-    You can use this to easily get DashLoader compatibility but it will also slow down the mod.
+    You can use this to easily get DashLoader compatibility, but it will also slow down the mod.
     ```json title="fabric.mod.json" 
         "custom": {
             "dashloader:disableoption": [
@@ -63,7 +63,7 @@ The DashLoader config allows for customization of the splash lines at the top of
     ]
     ```
 
-If you want to disable the default splash lines put `addDefaultSplashLines` to `#!c false`
+If you want to disable the default splash lines, set `addDefaultSplashLines` to `#!c false`
 !!! example
     ```json
     "addDefaultSplashLines": false
