@@ -11,10 +11,13 @@
 {% if nav_item.children and nav_item.active %}
 {% set nav_item = nav_item.children | first %}
 {% if nav_item.meta and nav_item.meta.color %}
+{% set hi = nav_item.meta.color.lstrip('#') %}
+
 <style>
     body {
         --md-accent-fg-color: {{nav_item.meta.color}} !important;
         --md-accent-fg-color--transparent: {{nav_item.meta.color}} !important;
+        --md-code-hl-color: rgba({{ hi[0:2]|int(0, 16) }}, {{ hi[2:4]|int(0, 16) }}, {{ hi[4:6]|int(0, 16) }}, 0.05) !important;
     }
 </style>
 {% endif %}
