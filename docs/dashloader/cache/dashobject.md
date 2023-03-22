@@ -1,32 +1,31 @@
 ---
+title: "DashObject"
 icon: "data_array"
 ---
-# DashObject
-The DashObject is a serializable form of the Object you are trying to cache. 
+The `DashObject` is a serializable form of the Object you are trying to cache. 
 
-So for example an Identifier has a DashIdentifier which is a DashObject and is the object that DashLoader serializes into the cache file. This is later loaded back and converted to a standard Identifier for exporting.
+So for example, `Identifier`s have a `DashIdentifier` which is a `DashObject`. This allows `Identifier`s to be added to the registry because the `DashIdentifier` provides a way to serialize and deserialize the `Identifier`.
 
 ???+ abstract
 
     ```java
-	@DashObject(Identifier.class) /* (1)! */
-	public class DashIdentifier implements Dashable<Identifier> /* (2)! */ {
+	public class DashIdentifier implements DashObject<Identifier> /* (1)! */ {
 		public final String namespace;
 		public final String path;
 
-	    //(3)
+	    //(2)
 		public DashIdentifier(String namespace, String path) {
 			this.namespace = namespace;
 	        this.path = path;
 		}
 
-	    //(4)
+	    //(3)
 		public DashIdentifier(Identifier identifier) {
 			this.namespace = identifier.getNamespace();
 			this.path = identifier.getPath();
 		}
 
-	    //(5)
+	    //(4)
 		@Override
 		public Identifier export(RegistryReader reader) {
 			return new Identifier(namespace, path);
@@ -34,20 +33,17 @@ So for example an Identifier has a DashIdentifier which is a DashObject and is t
 	}
 	```
 
-	1. This is the DashObject annotation which says that we are trying to add caching support to Identifier.
-	2. The Dashable interface is inherited by every DashObject - it includes methods like `export` which run on deserialization.
-	3. This constructor contains every field so that Hyphen (the serializer we use) can create the object.
-	4. This constructor gets run when a new Identifier tries to get cached. Your goal is to destructure the object so that we can serialize it. It is commonly refered as the "Factory" constructor.
-	5. This export method gets run on deserialization. Here you recreate the original Identifier object.
+	1. The DashObject interface is inherited by every DashObject - it includes methods like `export` which run on deserialization.
+	2. This constructor contains every field so that Hyphen (the serializer we use) can create the object.
+	3. This constructor gets run when a new Identifier tries to get cached. Your goal is to destructure the object so that we can serialize it. It is commonly referred as the "Factory" constructor.
+	4. This export method gets run on deserialization. Here you recreate the original Identifier object.
 
-## Metadata
-DashLoader needs to understand what exactly it is handling and what the DashObject is trying to do. This is why the `DashObject` annotation exists - it tells DashLoader what we are trying to add caching support to. Every DashObject which is defined in `fabric.mod.json` needs to have this annotation.
+??? tip "Real world examples"
+	A simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/identifier/DashIdentifier.java).
 
-In this example we are adding support to `Identifier` by making a `DashIdentifier` have the annotation `DashObject` with the *target* `Identifier.class`
-```java
-@DashObject(Identifier.class)
-public class DashIdentifier {}
-```
+	A less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/model/DashBasicBakedModel.java).
+
+	A way less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/shader/DashShader.java).
 
 ## Factory Constructor
 When an Object gets added to a `RegistryWriter` it tries to find a DashObject that has support for that class. If it finds a DashObject, its "Factory" constructor will be called. 
@@ -60,7 +56,7 @@ public DashIdentifier(Identifier identifier, RegistryWriter writer);
 ```
 - WRITER: Contains only a `RegistryWriter`
 ```java
-public DashIdentifier(RegistryWriter writer);
+public DashIdentifier(RegistryWriter writer); // kinda useless??
 ```
 - RAW: Contains only the target class
 ```java
@@ -68,13 +64,12 @@ public DashIdentifier(Identifier identifier);
 ```
 - EMPTY: Does not have any parameters.
 ```java
-public DashIdentifier(); // why tho?
+public DashIdentifier(); // where the party at?
 ```
 
 So if we want to serialize an identifier we would add the fields for the namespace and path, and then extract them from the Identifier using the Factory constructor.
-```java hl_lines="3-4 6-10"
-@DashObject(Identifier.class)
-public class DashIdentifier {
+```java hl_lines="2-3 5-9"
+public class DashIdentifier implements DashObject<Identifier> {
 	public final String namespace;
 	public final String path;
 
@@ -89,13 +84,12 @@ public class DashIdentifier {
 Please note that this constructor must be public since otherwise DashLoader cannot access it.
 
 ## Serialization
-DashLoader uses the Hyphen Serializer for maximum speed and efficiency. The documentation for that serializer is available on [docs.notalpha.dev/hyphen](docs.notalpha.dev/hyphen).
+DashLoader uses the Hyphen Serializer for maximum speed and efficiency. The documentation for that serializer is available on [https://notalpha.dev/docs/hyphen](/hyphen).
 
 We will show a simple example here:
 
-```java hl_lines="7-11"
-@DashObject(Identifier.class)
-public class DashIdentifier {
+```java hl_lines="6-10"
+public class DashIdentifier implements DashObject<Identifier> {
     // (1)
 	public final String namespace;
 	public final String path;
@@ -118,7 +112,7 @@ public class DashIdentifier {
 
 
 ## Exporting
-Exporting is when DashLoader has deserialized its cache and wants to now convert its DashObjects to the original Objects. The Dashable interface is inherited by all DashObjects and it contains the methods DashLoader uses when exporting the objects.
+Exporting is when DashLoader has deserialized its cache and wants to now convert its DashObjects to the original Objects. The DashObject interface contains the methods DashLoader uses when exporting the objects.
 
 ```java
 // The preExport methods runs before the DashObject is exported. 
@@ -134,11 +128,10 @@ Identifier export(RegistryReader reader);
 void postExport(RegistryReader reader);
 ```
 
-So for our Identifier, an example of export method looks like this:
+So for our Identifier, our export method would look like this:
 
-```java hl_lines="2 16-19"
-@DashObject(Identifier.class)
-public class DashIdentifier implements Dashable<Identifier> {
+```java hl_lines="15-18"
+public class DashIdentifier implements DashObject<Identifier> {
     public final String namespace;
     public final String path;
 
@@ -161,4 +154,4 @@ public class DashIdentifier implements Dashable<Identifier> {
 
 
 ## Registry
-You might have noticed we have a RegistryWriter on the factory constructor and a RegistryReader on the exporting methods. You can read more about how to use the DashRegistry here.
+You might have noticed we have a RegistryWriter on the factory constructor and a RegistryReader on the exporting methods. You can read more about how to use the DashRegistry [here](../registry).

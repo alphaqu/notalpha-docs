@@ -2,7 +2,9 @@
 icon: "database"
 ---
 # Registry
-The DashLoader Registry is a data object which holds all the DashObjects in a cache. Its job is to provide an easy way to deduplicate and export a huge amount of data really fast. The Registry is split into two classes, RegistryWriter is active on cache creation and RegistryReader is used on cache reading.
+The Registry is the core of DashLoader. This is a data structure which contains all of the data DashLoader saves, you use it by providing an Object with a [DashObject](../dashobject) implementation to the registry and then using the returned id to save its registry location for next load. Then on the next game launch, you can use that id to get your original object back.
+
+The reason why we don't save objects directly is because the Registry does dependency tracking and multithread's as hard as possible when exporting the objects back into their original form.
 
 ???+ abstract
 	```java
@@ -23,31 +25,55 @@ The DashLoader Registry is a data object which holds all the DashObjects in a ca
 	}
 	```
 
-	1. The `model` field is a registry identifier and points to our child model.
+	1. The `#!java int model` field is a registry ID which points to our child model.
 	2. Here we use the `#!java int RegistryWriter.add(V)` method to add the child model to the registry and retrieve its registry ID which we will save.
-	3. Here we get our child model back by using `#!java RegistryReader.get(int)` which will retrieve the object on deserialization.
+	3. Here we get our child model back by using `#!java RegistryReader.get(int)` which will retrieve the object from the registry.
+
+??? tip "Real world example"	
+	[In the `image` field, we are saving a NativeImage](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/font/DashBitmapFont.java)
+
+??? note "Source code"	
+	[RegistryWriter](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/api/RegistryWriter.java)
+	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/RegistryFactory.java)
+	& [Dependency tracking implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/TrackedRegistryFactory.java)
+
+
+	[RegistryReader](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/api/RegistryReader.java)
+	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/RegistryReaderImpl.java)
+
+
 
 ## RegistryWriter
-The RegistryWriter is a registry creator and its job is to track dependencies and create an exporting sequence which makes the exporting parallel while preventing race conditions.
+The RegistryWriter is a registry creator. Its job is to track dependencies and create an exporting sequence which makes the exporting parallel while preventing race conditions.
 
 The RegistryWriter has one single method.
 ```java 
 public <R> int add(R object);
 ```
-When calling add, you provide an object which has a DashObject implementor to the Registry, the registry saves the object and returns an ID which you can use to retrieve the object on the next cache load.
+When calling add, you provide an object to the Registry, then it saves the object and returns an ID which you can use to retrieve the object on the next cache load.
 
-Internally it works by first checking if the object already exists in the deduplication map, then it tries to see if any DashObject directly supports the object. If that also fails it will seek the `MissingHandler`s which are fallback implementations for unknown objects.
+!!! note
+	A DashObject implementation which supports the object needs to exist for the registry to serialize/deserialize it, else the registry has no idea what to do with it and throws an exception.
+
+#### Implementation Details
+It works by first checking if the object already exists in a deduplication map, then it tries to see if any DashObject directly supports the object. If that also fails it will seek the `MissingHandler`s which are fallback implementations for unknown objects that *hopefully* find a DashObject for that object, else it will throw an exception.
+
+The RegistryWriter also tracks dependencies if it's invoked from a DashObject, this allows it to build a dependency tree which allows objects to be loaded in parallel while ensuring that all of the children have already been deserialized.
 
 ## RegistryReader
-The RegistryReader is the cache registry provider. Its job is to export all the DashObjects into their original forms and allow parents to get their children back.
+The RegistryReader is used on cache load to retrieve objects from the registry.
 
 ```java 
 public <R> R get(int id);
 ```
-This method gets the original non-dash object that you initially added by using `#!java int add(R object)`. 
-The order that RegistryReader exports ensures that the object you are getting has already been exported.
+You call `get` with the id that you got by using `#!java <R> int add(R object)` to get the cached object back from the registry.
+
+#### Implementation Details
+On the cache save the RegistryWriter took note of what you registered and build a dependency tree which ensured that all of your registered objects are exported before you are.
+
+This method is also insanely fast, its basically just a two dimensional array lookup.
 
 ## ID
 A registry ID is a 32-bit number which contains a 6-bit chunk number and a 26-bit chunk-entry number. You can retrieve the values by using the methods in `RegistryUtil`
 
-This also means that DashLoader has a limit on 63 DashObject chunks and a limit on 67108863 for DashObject entries. If you ever hit this limit please let me know - either the values might get adjusted or we switch to using a long.
+This also means that DashLoader has a limit of 63 DashObject chunks and a limit of 67108863 DashObject entries. If you ever hit this limit please let me know - the values might get adjusted or we switch to using a long.
