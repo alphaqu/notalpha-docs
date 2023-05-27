@@ -33,13 +33,13 @@ The reason why we don't save objects directly is because the Registry does depen
 	[In the `image` field, we are saving a NativeImage](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/font/DashBitmapFont.java)
 
 ??? note "Source code"	
-	[RegistryWriter](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/api/RegistryWriter.java)
-	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/RegistryFactory.java)
-	& [Dependency tracking implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/TrackedRegistryFactory.java)
+	[RegistryWriter](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/api/registry/RegistryWriter.java)
+	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/registry/RegistryWriterImpl.java)
+	& [Dependency tracking implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/registry/TrackingRegistryWriterImpl.java)
 
 
-	[RegistryReader](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/api/RegistryReader.java)
-	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/registry/RegistryReaderImpl.java)
+	[RegistryReader](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/api/registry/RegistryReader.java)
+	<- [Implementation](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/registry/RegistryReaderImpl.java)
 
 
 

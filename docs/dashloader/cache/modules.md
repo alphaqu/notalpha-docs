@@ -8,7 +8,7 @@ A DashLoader Module is a caching implementation. It gets added on DashLoader's E
     ```java title="DashLoaderCompatibility.java"
     public class DashLoaderCompatibility implements DashEntrypoint {
 		@Override
-		public void onDashLoaderInit(DashCacheFactory factory) {
+		public void onDashLoaderInit(CacheFactory factory) {
 			factory.addModule(new MyModule()/* (1)! */);
 		}	
 	}
@@ -67,17 +67,17 @@ A DashLoader Module is a caching implementation. It gets added on DashLoader's E
 	7. We go through our registry ids in our data object and get the original object back through the registry.
 
 ??? tip "Real world example"
-    [ModelModule](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/model/ModelModule.java)
+    [ModelModule](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/client/model/ModelModule.java)
 
 
 ## Registration
-To add a module to the DashLoader, you will need to call `#!java DashCacheFactory.addModule(DashModule)` in your DashEntrypoint.
+To add a module to the DashLoader, you will need to call `#!java CacheFactory.addModule(DashModule)` in your DashEntrypoint.
 
 ```java title="DashLoaderCompatibility.java" hl_lines="5"
 public class DashLoaderCompatibility implements DashEntrypoint {
 
 	@Override
-	public void onDashLoaderInit(DashCacheFactory factory) {
+	public void onDashLoaderInit(CacheFactory factory) {
 		factory.addModule(new MyModule());
 	}	
 }

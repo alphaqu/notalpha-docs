@@ -17,7 +17,7 @@ icon: "start"
     public class DashLoaderCompatibility implements DashEntrypoint/* (1)! */{
         /* (2)! */
 	    @Override
-    	public void onDashLoaderInit(DashCacheFactory factory) {
+    	public void onDashLoaderInit(CacheFactory factory) {
            factory.addDashObject(DashMyObject.class)/* (3)! */;
            factory.addModule(new MyModule())/* (4)! */;
 
@@ -40,7 +40,7 @@ icon: "start"
     5. We can add a custom MissingHandler to the DashRegistry which is a fallback function if the registry cannot find a DashObject.
 
 ??? tip "Real world example"
-    [DashLoaderClient](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/DashLoaderClient.java#L83-L115)
+    [DashLoaderClient](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/client/DashLoaderClient.java)
 
 DashLoader has a Fabric API Entrypoint for registering DashObjects, Modules and Missing Handlers.
 
@@ -57,7 +57,7 @@ You simply create a class which implements `DashEntrypoint` and add it to your f
 public class DashLoaderCompatibility implements DashEntrypoint {
 
 	@Override
-	public void onDashLoaderInit(DashCacheFactory factory) {
+	public void onDashLoaderInit(CacheFactory factory) {
 	}
 }
 ```
@@ -68,7 +68,7 @@ After you have made your DashObject you need to tell DashLoader about it. You do
 
 ```java title="DashLoaderCompatibility.java" hl_lines="3"
 	@Override
-	public void onDashLoaderInit(DashCacheFactory factory) {
+	public void onDashLoaderInit(CacheFactory factory) {
         factory.addDashObject(DashMyObject.class);
     }
 ```
@@ -77,7 +77,7 @@ After you have made your DashObject you need to tell DashLoader about it. You do
 If you want to add a custom module, you need to tell DashLoader about it by calling `addModule` in `CacheFactory`
 ```java title="DashLoaderCompatibility.java" hl_lines="3"
 	@Override
-	public void onDashLoaderInit(DashCacheFactory factory) {
+	public void onDashLoaderInit(CacheFactory factory) {
         factory.addModule(new MyModule());
     }
 ```
@@ -85,11 +85,11 @@ If you want to add a custom module, you need to tell DashLoader about it by call
 ## MissingHandlers
 When a DashLoader registry fails to find a DashObject for a given Object it will resort to its last option, `MissingHandler`s.
 
-These are functions which check if the object is one of a fallbackable kind and map it to a DashObject else it will return `#!java null` and let the other MissingHandlers find a use for it, if the registry runs out of MissingHandlers before its found a non-null returning handler, it will throw an exception saying that it was unable to add the object to the registry.
+These are functions which check if the object is one of a fallbackable kind and map it to a bruhDashObject else it will return `#!java null` and let the other MissingHandlers find a use for it, if the registry runs out of MissingHandlers before its found a non-null returning handler, it will throw an exception saying that it was unable to add the object to the registry.
 
 ```java hl_lines="3-12"
 	@Override
-	public void onDashLoaderInit(DashCacheFactory factory) {
+	public void onDashLoaderInit(CacheFactory factory) {
 		factory.addMissingHandler(
 			MyGoofyObject.class/* (1)! */,
 			(goofyObject, registryWriter) -> {

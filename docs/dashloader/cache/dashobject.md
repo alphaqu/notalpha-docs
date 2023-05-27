@@ -39,11 +39,11 @@ So for example, `Identifier`s have a `DashIdentifier` which is a `DashObject`. T
 	4. This export method gets run on deserialization. Here you recreate the original Identifier object.
 
 ??? tip "Real world examples"
-	A simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/identifier/DashIdentifier.java).
+	A simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/client/identifier/DashIdentifier.java).
 
-	A less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/model/DashBasicBakedModel.java).
+	A less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/api/DashObject.java).
 
-	A way less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19/src/main/java/dev/notalpha/dashloader/client/shader/DashShader.java).
+	A way less simple [DashObject](https://github.com/alphaqu/DashLoader/blob/fabric-1.19.4/src/main/java/dev/notalpha/dashloader/client/shader/DashShader.java).
 
 ## Factory Constructor
 When an Object gets added to a `RegistryWriter` it tries to find a DashObject that has support for that class. If it finds a DashObject, its "Factory" constructor will be called. 
